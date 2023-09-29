@@ -194,7 +194,7 @@ public static class StringExtensions
     /// <returns></returns>
     /// <remarks>
     ///     This methods ensures that the resulting URL is structured correctly, that there's only one '?' and that things are
-    ///     delimited properly with '&'
+    ///     delimited properly with '&amp;'
     /// </remarks>
     public static string AppendQueryStringToUrl(this string url, params string[] queryStrings)
     {
@@ -1040,14 +1040,15 @@ public static class StringExtensions
             throw new ArgumentNullException(nameof(text));
         }
 
-        var pos = text.IndexOf(search, StringComparison.InvariantCulture);
+        ReadOnlySpan<char> spanText = text.AsSpan();
+        var pos = spanText.IndexOf(search, StringComparison.InvariantCulture);
 
         if (pos < 0)
         {
             return text;
         }
 
-        return text.Substring(0, pos) + replace + text.Substring(pos + search.Length);
+        return string.Concat(spanText[..pos], replace.AsSpan(), spanText[(pos + search.Length)..]);
     }
 
     /// <summary>

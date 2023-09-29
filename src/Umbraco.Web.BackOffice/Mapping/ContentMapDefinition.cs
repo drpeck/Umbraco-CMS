@@ -125,6 +125,7 @@ internal class ContentMapDefinition : IMapDefinition
         target.Tabs = source.Tabs;
         target.UpdateDate = source.UpdateDate;
         target.AllowedActions = source.AllowedActions;
+        target.AdditionalPreviewUrls = source.AdditionalPreviewUrls;
     }
 
     // Umbraco.Code.MapAll
@@ -167,6 +168,11 @@ internal class ContentMapDefinition : IMapDefinition
         target.Updater = source.Updater;
         target.Urls = source.Urls;
         target.Variants = context.MapEnumerable<ContentVariantDisplay, ContentVariantScheduleDisplay>(source.Variants);
+
+        foreach (BackOfficeNotification backOfficeNotification in source.Notifications)
+        {
+            target.Notifications.Add(backOfficeNotification);
+        }
     }
 
     // Umbraco.Code.MapAll
@@ -182,6 +188,7 @@ internal class ContentMapDefinition : IMapDefinition
         target.Tabs = source.Tabs;
         target.UpdateDate = source.UpdateDate;
         target.AllowedActions = source.AllowedActions;
+        target.AdditionalPreviewUrls = source.AdditionalPreviewUrls;
 
         // We'll only try and map the ReleaseDate/ExpireDate if the "old" ContentVariantScheduleDisplay is in the context, otherwise we'll just skip it quietly.
         _ = context.Items.TryGetValue(nameof(ContentItemDisplayWithSchedule.Variants), out var variants);
@@ -300,7 +307,7 @@ internal class ContentMapDefinition : IMapDefinition
         };
     }
 
-    // Umbraco.Code.MapAll -Segment -Language -DisplayName
+    // Umbraco.Code.MapAll -Segment -Language -DisplayName -AdditionalPreviewUrls
     private void Map(IContent source, ContentVariantDisplay target, MapperContext context)
     {
         target.CreateDate = source.CreateDate;

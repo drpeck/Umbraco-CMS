@@ -639,12 +639,17 @@
                         mapToPropertyModel(this.settings, this.settingsData);
                     }
                 };
-
                 // first time instant update of label.
-                blockObject.label = blockObject.content?.contentTypeName || "";
-                blockObject.index = 0;
+              blockObject.label = blockObject.content?.contentTypeName || "";
+                blockObject.index = 0; 
 
                 if (blockObject.config.label && blockObject.config.label !== "" && blockObject.config.unsupported !== true) {
+
+                    // If the label does not contain any AngularJS template, then the MutationObserver wont give us any updates. To ensure labels without angular JS template code, we will just set the label directly for ones without '{{':
+                    if(blockObject.config.label.indexOf("{{") === -1) {
+                        blockObject.label = blockObject.config.label;
+                    }
+
                     var labelElement = $('<div></div>', { text: blockObject.config.label});
 
                     var observer = new MutationObserver(function(mutations) {
@@ -674,6 +679,7 @@
                         this.__labelScope = Object.assign(this.__labelScope, labelVars);
 
                         $compile(labelElement.contents())(this.__labelScope);
+
                     }.bind(blockObject)
                 } else {
                     blockObject.__renderLabel = function() {};
